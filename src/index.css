@@ -828,8 +828,11 @@ figure {
 
 /* ---------- mobile / tablet: snap-per-section + one-shot entrances
    instead of the pinned, scroll-scrubbed storytelling used on desktop
-   (see the isMobile branch in useScrollAnimations) ---------- */
-@media (max-width: 860px) {
+   (see the isMobile branch in useScrollAnimations). Must match that hook's
+   MOBILE_QUERY exactly — width alone misses a tablet in landscape (or a
+   12.9" iPad Pro even in portrait), which is wider than 860px but still a
+   touch device, not a mouse-driven desktop. ---------- */
+@media (max-width: 860px), (pointer: coarse) {
   html {
     scroll-snap-type: y mandatory;
   }

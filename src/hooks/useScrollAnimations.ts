@@ -20,11 +20,16 @@ const AMP: Record<Motion, number> = {
   expressive: 1.5,
 };
 
-// Below this width (phones + most tablets — matches the dot-nav/hamburger
-// swap breakpoint), the pinned scroll-scrubbed storytelling is replaced by
-// short, normal-flow sections with a single entrance reveal each.
-const MOBILE_QUERY = '(max-width: 860px)';
-const DESKTOP_QUERY = '(min-width: 861px)';
+// Width alone isn't enough to tell "phone/tablet" from "desktop": a tablet
+// in landscape (or a big iPad Pro even in portrait) is wider than 860px but
+// is still a touch device, and should get the same lighter treatment as a
+// phone — not the mouse-driven pinned/scrubbed storytelling. `pointer` is
+// the primary input's precision (coarse = touch, fine = mouse/trackpad),
+// so combining it with the width check catches every tablet regardless of
+// orientation or size, while a narrow desktop browser window still counts
+// as mobile too (matches the dot-nav/hamburger swap breakpoint).
+const MOBILE_QUERY = '(max-width: 860px), (pointer: coarse)';
+const DESKTOP_QUERY = '(min-width: 861px) and (pointer: fine)';
 
 export function useScrollAnimations({
   motion = 'balanced',
