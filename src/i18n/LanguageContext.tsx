@@ -21,6 +21,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(getInitialLang);
 
   const toggleLang = () => {
+    // Sections are pinned/scroll-scrubbed on desktop, and their scrub
+    // timelines get torn down and rebuilt for the new text as soon as `lang`
+    // changes. Doing that mid-section (translated copy is a different length,
+    // GSAP's per-element transforms briefly resolve against the old layout)
+    // can leave text visibly overlapping for a moment — jumping to the top
+    // first means the rebuild always happens on the simple, unpinned state.
+    window.scrollTo(0, 0);
     setLang((prev) => {
       const next = prev === 'es' ? 'en' : 'es';
       window.localStorage.setItem(STORAGE_KEY, next);
