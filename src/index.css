@@ -842,7 +842,24 @@ figure {
   #about,
   #cta {
     height: auto;
+  }
+  /* Experience/Education are deliberately left out here: their real snap
+     targets are the individual .role cards below, not the section wrapper.
+     Snapping the wrapper too created a second, slightly offset stop (the
+     stage's top padding + the sticky badge's own flow height sit between
+     the section's top and the first card's top) — landing on it left you
+     looking at a not-yet-full-height first card, needing an extra partial
+     scroll to reach the card's own snap point. */
+  #hero,
+  #intro,
+  #stack,
+  #about,
+  #cta {
     scroll-snap-align: start;
+    /* without this, a fast real-finger flick carries enough momentum to
+       sail past several snap points in one gesture instead of stopping at
+       the very next one — "always" forces a stop at every section */
+    scroll-snap-stop: always;
   }
 
   #hero-stage,
@@ -850,9 +867,22 @@ figure {
   #experience-stage,
   #education-stage,
   #stack-stage,
+  #about-stage,
+  #cta {
+    /* 100svh is the *smallest* possible viewport (address bar fully
+       expanded); once you scroll and the browser chrome collapses, the
+       real visible area grows past it, leaving a gap before the next
+       section's snap point — a little extra scroll "to get there". 100dvh
+       tracks the actual visible viewport as the chrome shows/hides. */
+    min-height: 100dvh;
+  }
+  #hero-stage,
+  #intro-stage,
+  #experience-stage,
+  #education-stage,
+  #stack-stage,
   #about-stage {
     height: auto;
-    min-height: 100svh;
     overflow: visible;
     padding-top: clamp(90px, 16vh, 140px);
     padding-bottom: clamp(64px, 10vh, 100px);
@@ -883,11 +913,16 @@ figure {
      with its own snap stop and entrance, so one scroll lands you on exactly
      one role instead of scrolling through several at once */
   .role {
-    position: static;
+    /* relative, not static: still normal document flow (same as static for
+       layout), but stays the positioning context for its own .role-bg-num —
+       otherwise that absolutely-positioned ghost number escapes up to the
+       whole (multi-card-tall) stage and can bleed into the next card */
+    position: relative;
     opacity: 1;
-    min-height: 100svh;
+    min-height: 100dvh;
     padding: clamp(36px, 8vh, 72px) clamp(20px, 6vw, 40px);
     scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
   .role:not(:last-child) {
     border-bottom: 1px solid var(--line);
@@ -895,15 +930,17 @@ figure {
   .role-rail-layout {
     padding-left: clamp(20px, 6vw, 40px);
   }
-  .role-bg-num,
   .edu-rail-track {
     display: none;
   }
-  .role-desc,
-  .role-list {
-    opacity: 1;
+  /* Experience's ghost watermark number: scaled down and shown as a static
+     backdrop instead of the desktop scrub-revealed flourish (which stays at
+     opacity:0 with nothing to trigger it on mobile) */
+  .role-bg-num {
+    opacity: 0.35;
+    font-size: clamp(6rem, 32vw, 10rem);
+    right: clamp(8px, 3vw, 20px);
   }
-
   /* stack: wrap into a grid instead of the horizontal scrub track */
   #stack-track {
     flex-wrap: wrap;

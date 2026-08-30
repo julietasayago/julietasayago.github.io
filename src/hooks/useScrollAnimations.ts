@@ -562,17 +562,26 @@ export function useScrollAnimations({
           },
         );
         qa('#experience .role').forEach((card) => {
-          gsap.fromTo(
-            card,
-            { opacity: 0, y: 36 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.7,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: card, start: 'top 85%', ...enter },
-            },
-          );
+          const num = card.querySelector('.role-num');
+          const title = card.querySelector('.role-title');
+          const meta = card.querySelector('.role-meta');
+          const desc = card.querySelector('.role-desc');
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: card, start: 'top 82%', ...enter },
+          });
+          tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
+          if (num) tl.fromTo(num, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0);
+          if (title)
+            tl.fromTo(
+              title,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+              0.08,
+            );
+          if (meta)
+            tl.fromTo(meta, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.3);
+          if (desc)
+            tl.fromTo(desc, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.4);
         });
 
         // ---------- EDUCATION ----------
@@ -588,17 +597,26 @@ export function useScrollAnimations({
           },
         );
         qa('#education .role').forEach((card) => {
-          gsap.fromTo(
-            card,
-            { opacity: 0, y: 36 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.7,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: card, start: 'top 85%', ...enter },
-            },
-          );
+          const num = card.querySelector('.role-num');
+          const title = card.querySelector('.role-title');
+          const meta = card.querySelector('.role-meta');
+          const body = card.querySelector('.role-desc') ?? card.querySelector('.role-list');
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: card, start: 'top 82%', ...enter },
+          });
+          tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
+          if (num) tl.fromTo(num, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0);
+          if (title)
+            tl.fromTo(
+              title,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+              0.08,
+            );
+          if (meta)
+            tl.fromTo(meta, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.3);
+          if (body)
+            tl.fromTo(body, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.4);
         });
 
         // ---------- STACK ----------
@@ -627,28 +645,22 @@ export function useScrollAnimations({
         );
 
         // ---------- ABOUT ----------
-        gsap.fromTo(
-          '.about-eyebrow',
-          { opacity: 0, x: -12 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.5,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#about', start: 'top 82%', ...enter },
-          },
-        );
-        gsap.fromTo(
-          '#about-copy',
-          { opacity: 0, y: 18 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: '#about-copy', start: 'top 85%', ...enter },
-          },
-        );
+        gsap
+          .timeline({
+            scrollTrigger: { trigger: '#about', start: 'top 78%', ...enter },
+          })
+          .fromTo(
+            '.about-eyebrow',
+            { opacity: 0, x: -12 },
+            { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' },
+            0,
+          )
+          .fromTo(
+            '#about-copy',
+            { opacity: 0, y: 18 },
+            { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+            0.25,
+          );
 
         // ---------- CTA ----------
         gsap
