@@ -825,3 +825,94 @@ figure {
 .social-link:hover {
   color: var(--accent);
 }
+
+/* ---------- mobile / tablet: snap-per-section + one-shot entrances
+   instead of the pinned, scroll-scrubbed storytelling used on desktop
+   (see the isMobile branch in useScrollAnimations) ---------- */
+@media (max-width: 860px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+
+  #hero,
+  #intro,
+  #experience,
+  #education,
+  #stack,
+  #about,
+  #cta {
+    height: auto;
+    scroll-snap-align: start;
+  }
+
+  #hero-stage,
+  #intro-stage,
+  #experience-stage,
+  #education-stage,
+  #stack-stage,
+  #about-stage {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+    padding-top: clamp(90px, 16vh, 140px);
+    padding-bottom: clamp(64px, 10vh, 100px);
+  }
+  /* base rule leaves these as row-flex (fine on desktop, where the cards
+     are position:absolute and layered); on mobile the cards are normal-flow
+     and need to stack vertically, one per swipe */
+  #experience-stage,
+  #education-stage {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* the section badge ("EXPERIENCE" / "EDUCATION") was absolutely positioned
+     against the top of the whole (now very tall) stage, so it scrolled out
+     of view once you moved past the first card — pin it to the viewport for
+     as long as you're anywhere inside that section's stack of cards */
+  .role-eyebrow {
+    position: sticky;
+    top: clamp(16px, 4vh, 32px);
+    left: auto;
+    z-index: 5;
+    margin: 0 0 0 clamp(20px, 6vw, 40px);
+  }
+
+  /* experience / education cards: from an absolute-positioned, cross-fading
+     stack to a normal vertical flow — each card is its own full-screen slide
+     with its own snap stop and entrance, so one scroll lands you on exactly
+     one role instead of scrolling through several at once */
+  .role {
+    position: static;
+    opacity: 1;
+    min-height: 100svh;
+    padding: clamp(36px, 8vh, 72px) clamp(20px, 6vw, 40px);
+    scroll-snap-align: start;
+  }
+  .role:not(:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+  .role-rail-layout {
+    padding-left: clamp(20px, 6vw, 40px);
+  }
+  .role-bg-num,
+  .edu-rail-track {
+    display: none;
+  }
+  .role-desc,
+  .role-list {
+    opacity: 1;
+  }
+
+  /* stack: wrap into a grid instead of the horizontal scrub track */
+  #stack-track {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  /* about: the whole paragraph fades in together instead of lighting up
+     word by word as you scroll */
+  .about-word {
+    opacity: 1;
+  }
+}
