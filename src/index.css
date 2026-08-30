@@ -390,8 +390,12 @@ figure {
   color: var(--accent);
 }
 
-/* tablet / mobile: swap the dot-nav + contact link for the hamburger menu */
-@media (max-width: 860px) {
+/* tablet / mobile: swap the dot-nav + contact link for the hamburger menu.
+   Same combined width-or-touch condition as the mobile/tablet block below —
+   otherwise a tablet in landscape (wide enough, but still touch) would keep
+   the desktop dot-nav sidebar while the rest of the page is already in
+   mobile/tablet mode. */
+@media (max-width: 860px), (pointer: coarse) {
   .dot-nav,
   .nav-contact {
     display: none;
