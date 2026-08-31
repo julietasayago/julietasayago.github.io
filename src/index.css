@@ -449,7 +449,8 @@ figure {
   height: 1px;
   background: var(--line);
   margin-top: clamp(16px, 3vw, 34px);
-  transform: scaleX(0);
+  /* Visible at rest — the hero has no load-in reveal. The desktop exit
+     timeline still scrubs this from scaleX(1) to scaleX(0). */
   transform-origin: 50% 50%;
 }
 #hero-sub {

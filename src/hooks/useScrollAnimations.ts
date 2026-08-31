@@ -153,20 +153,12 @@ export function useScrollAnimations({
         onLeaveBack: () => q('#back-to-top')?.classList.remove('is-visible'),
       });
 
-      // ---------- HERO load-in (identical on every breakpoint — only the
-      // scroll-driven exit further down differs) ----------
+      // ---------- HERO ----------
+      // No load-in animation: the hero is fully visible the moment the
+      // preloader curtain lifts and scrolling is live immediately. (An
+      // earlier wall-clock letter/rule/sub reveal raced the scroll-scrubbed
+      // exit below and shattered the hero if you scrolled during it.)
       const letters = qa('#hero-name span');
-      gsap.from(letters, {
-        yPercent: 115,
-        opacity: 0,
-        duration: 1.15,
-        ease: 'expo.out',
-        stagger: 0.035,
-        delay: 0.15,
-      });
-      gsap.to('#hero-rule', { scaleX: 1, duration: 1.4, ease: 'expo.out', delay: 0.5 });
-      gsap.from('#hero-role', { opacity: 0, y: -10, duration: 1, ease: 'power3.out', delay: 0.4 });
-      gsap.from('#hero-sub', { opacity: 0, y: 14, duration: 1, ease: 'power3.out', delay: 0.75 });
       gsap.set('.triad-item', { y: 24 });
 
       const mm = gsap.matchMedia();
