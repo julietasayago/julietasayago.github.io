@@ -839,7 +839,15 @@ figure {
    touch device, not a mouse-driven desktop. ---------- */
 @media (max-width: 860px), (pointer: coarse) {
   html {
-    scroll-snap-type: y mandatory;
+    /* proximity, not mandatory: mandatory forces a hard corrective jump
+       back to the nearest snap point after ANY scroll, even a tiny nudge
+       that never meant to leave the section — that correction is what
+       read as "violent". proximity only snaps once you're already close
+       to a point, so small movements just rest where they land, while a
+       real swipe still has enough momentum to land near the next section
+       and snap cleanly (scroll-snap-stop: always, below, still keeps a
+       fast flick from sailing past more than one). */
+    scroll-snap-type: y proximity;
   }
 
   #hero,
