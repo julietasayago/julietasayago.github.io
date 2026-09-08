@@ -78,7 +78,16 @@ export function useScrollAnimations({
         const offset = id === '#hero' ? 0 : destHeight * 0.2;
         lenisRef.scrollTo(dest, { duration: 1.2, offset });
       } else {
-        dest.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // On mobile, Experience/Education aren't snap points themselves —
+        // only their .role cards are (see the mobile CSS). Targeting the
+        // section wrapper still scrolls there, but mandatory scroll-snap
+        // then yanks the resting position past it to the first card's own
+        // snap point, landing ~100px lower than requested — a visible
+        // overshoot the other nav links (which snap on the section itself)
+        // don't have. Target that real snap point directly so it lands
+        // exactly like every other section.
+        const snapDest = dest.querySelector<HTMLElement>('.role') ?? dest;
+        snapDest.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
     document.addEventListener('click', onAnchor);
