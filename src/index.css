@@ -880,9 +880,14 @@ figure {
     /* 100svh is the *smallest* possible viewport (address bar fully
        expanded); once you scroll and the browser chrome collapses, the
        real visible area grows past it, leaving a gap before the next
-       section's snap point — a little extra scroll "to get there". 100dvh
-       tracks the actual visible viewport as the chrome shows/hides. */
-    min-height: 100dvh;
+       section's snap point — a little extra scroll "to get there". Plain
+       100dvh would track that live, but it keeps recalculating *during* the
+       very scroll gesture that collapses the bar, which drags a mandatory
+       scroll-snap target out from under the first swipe (a visible cut).
+       --vh100 is the same idea frozen to a value JS only updates once the
+       resize has settled (see useStableViewportHeight), so it doesn't move
+       mid-gesture. */
+    min-height: var(--vh100, 100dvh);
   }
   #hero-stage,
   #intro-stage,
@@ -927,7 +932,9 @@ figure {
        whole (multi-card-tall) stage and can bleed into the next card */
     position: relative;
     opacity: 1;
-    min-height: 100dvh;
+    /* see --vh100 note above #hero-stage: frozen so it doesn't shift under
+       a mandatory scroll-snap gesture while the address bar collapses */
+    min-height: var(--vh100, 100dvh);
     padding: clamp(36px, 8vh, 72px) clamp(20px, 6vw, 40px);
     scroll-snap-align: start;
     scroll-snap-stop: always;

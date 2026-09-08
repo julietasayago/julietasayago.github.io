@@ -11,6 +11,7 @@ import Preloader from './components/Preloader';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { ThemeProvider } from './theme/ThemeContext';
 import { useScrollAnimations } from './hooks/useScrollAnimations';
+import { useStableViewportHeight } from './hooks/useStableViewportHeight';
 
 function Page({ ready }: { ready: boolean }) {
   useScrollAnimations({ ready });
@@ -31,6 +32,7 @@ function Page({ ready }: { ready: boolean }) {
 
 function App() {
   const [ready, setReady] = useState(false);
+  useStableViewportHeight();
 
   return (
     <ThemeProvider>
