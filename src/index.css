@@ -967,4 +967,109 @@ figure {
   .about-word {
     opacity: 1;
   }
+
+  /* ---------- one-shot entrance reveals, mobile only ----------
+     A single shared IntersectionObserver (setupMobileReveals in
+     useScrollAnimations) adds .is-visible to one of these "group"
+     elements the first time it scrolls into view; everything below is a
+     plain CSS transition from there. This replaces what used to be ~20
+     individual GSAP ScrollTrigger instances built synchronously the
+     moment the page becomes interactive — building that many at once was
+     the biggest piece of the one-time setup cost still heavy enough on a
+     real phone to fight the very first scroll gesture, even deferred.
+     Plain CSS transitions cost nothing to "set up": the browser is
+     already doing this work for free. */
+  #intro-head,
+  .triad-item,
+  #intro-body,
+  .role-eyebrow,
+  .role-num,
+  .role-title,
+  .role-meta,
+  .role-desc,
+  .role-list,
+  .stack-item,
+  #stack-note,
+  .about-eyebrow,
+  #about-copy,
+  #cta-a,
+  #cta-b,
+  #cta-link {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  #intro.is-visible #intro-head,
+  #intro.is-visible .triad-item,
+  #intro.is-visible #intro-body,
+  #experience.is-visible .role-eyebrow,
+  #education.is-visible .role-eyebrow,
+  .role.is-visible .role-num,
+  .role.is-visible .role-title,
+  .role.is-visible .role-meta,
+  .role.is-visible .role-desc,
+  .role.is-visible .role-list,
+  #stack.is-visible .stack-item,
+  #stack-note.is-visible,
+  #about.is-visible .about-eyebrow,
+  #about.is-visible #about-copy,
+  #cta.is-visible #cta-a,
+  #cta.is-visible #cta-b,
+  #cta.is-visible #cta-link {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* light stagger within each group — fixed delays instead of a
+     per-element GSAP stagger, same idea, no runtime cost */
+  #intro.is-visible .triad-item {
+    transition-delay: 0.15s;
+  }
+  #intro.is-visible #intro-body {
+    transition-delay: 0.3s;
+  }
+  .role.is-visible .role-title {
+    transition-delay: 0.08s;
+  }
+  .role.is-visible .role-meta {
+    transition-delay: 0.2s;
+  }
+  .role.is-visible .role-desc,
+  .role.is-visible .role-list {
+    transition-delay: 0.3s;
+  }
+  #stack.is-visible .stack-item:nth-child(2) {
+    transition-delay: 0.04s;
+  }
+  #stack.is-visible .stack-item:nth-child(3) {
+    transition-delay: 0.08s;
+  }
+  #stack.is-visible .stack-item:nth-child(4) {
+    transition-delay: 0.12s;
+  }
+  #stack.is-visible .stack-item:nth-child(5) {
+    transition-delay: 0.16s;
+  }
+  #stack.is-visible .stack-item:nth-child(6) {
+    transition-delay: 0.2s;
+  }
+  #stack.is-visible .stack-item:nth-child(7) {
+    transition-delay: 0.24s;
+  }
+  #stack.is-visible .stack-item:nth-child(8) {
+    transition-delay: 0.28s;
+  }
+  #stack.is-visible .stack-item:nth-child(9) {
+    transition-delay: 0.32s;
+  }
+  #about.is-visible #about-copy {
+    transition-delay: 0.2s;
+  }
+  #cta.is-visible #cta-b {
+    transition-delay: 0.1s;
+  }
+  #cta.is-visible #cta-link {
+    transition-delay: 0.25s;
+  }
 }

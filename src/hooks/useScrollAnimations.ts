@@ -552,165 +552,44 @@ export function useScrollAnimations({
           };
         }
 
-        // ================= MOBILE / TABLET: native scroll + one-shot entrances =================
+        // ================= MOBILE / TABLET: native scroll + CSS-transition
+        // reveals =================
+        // These used to be ~20 individual GSAP ScrollTrigger instances (one
+        // per element/card), all built synchronously in this same pass —
+        // that batch was the biggest piece of the one-time setup cost, and
+        // even deferred (see ctx.add(setup) above), it was still heavy
+        // enough on a real phone to visibly fight the very first scroll
+        // gesture. A single shared IntersectionObserver just toggles
+        // .is-visible on each "group" element the first time it scrolls
+        // in; the actual animation is a plain CSS transition (see index.css)
+        // that costs nothing to set up.
         lenisRef = null;
-        const enter = { toggleActions: 'play none none none' } as const;
 
-        // ---------- INTRO ----------
-        gsap
-          .timeline({
-            scrollTrigger: { trigger: '#intro', start: 'top 78%', ...enter },
-          })
-          .fromTo(
-            '#intro-head',
-            { opacity: 0, y: 36 },
-            { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
-          )
-          .to(
-            '.triad-item',
-            { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' },
-            '-=0.45',
-          )
-          .fromTo(
-            '#intro-body',
-            { opacity: 0, y: 22 },
-            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-            '-=0.15',
-          );
+        const revealGroups = [
+          q('#intro'),
+          q('#experience'),
+          ...qa('#experience .role'),
+          q('#education'),
+          ...qa('#education .role'),
+          q('#stack'),
+          q('#stack-note'),
+          q('#about'),
+          q('#cta'),
+        ].filter((el): el is HTMLElement => !!el);
 
-        // ---------- EXPERIENCE ----------
-        gsap.fromTo(
-          '#experience .role-eyebrow',
-          { opacity: 0, y: -12 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#experience', start: 'top 85%', ...enter },
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add('is-visible');
+              io.unobserve(entry.target);
+            }
           },
+          { rootMargin: '0px 0px -15% 0px' },
         );
-        qa('#experience .role').forEach((card) => {
-          const num = card.querySelector('.role-num');
-          const title = card.querySelector('.role-title');
-          const meta = card.querySelector('.role-meta');
-          const desc = card.querySelector('.role-desc');
-          const tl = gsap.timeline({
-            scrollTrigger: { trigger: card, start: 'top 82%', ...enter },
-          });
-          tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
-          if (num) tl.fromTo(num, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0);
-          if (title)
-            tl.fromTo(
-              title,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
-              0.08,
-            );
-          if (meta)
-            tl.fromTo(meta, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.3);
-          if (desc)
-            tl.fromTo(desc, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.4);
-        });
+        revealGroups.forEach((el) => io.observe(el));
 
-        // ---------- EDUCATION ----------
-        gsap.fromTo(
-          '#education .role-eyebrow',
-          { opacity: 0, y: -12 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#education', start: 'top 85%', ...enter },
-          },
-        );
-        qa('#education .role').forEach((card) => {
-          const num = card.querySelector('.role-num');
-          const title = card.querySelector('.role-title');
-          const meta = card.querySelector('.role-meta');
-          const body = card.querySelector('.role-desc') ?? card.querySelector('.role-list');
-          const tl = gsap.timeline({
-            scrollTrigger: { trigger: card, start: 'top 82%', ...enter },
-          });
-          tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
-          if (num) tl.fromTo(num, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0);
-          if (title)
-            tl.fromTo(
-              title,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
-              0.08,
-            );
-          if (meta)
-            tl.fromTo(meta, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.3);
-          if (body)
-            tl.fromTo(body, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.4);
-        });
-
-        // ---------- STACK ----------
-        gsap.fromTo(
-          '.stack-item',
-          { opacity: 0, y: 26 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.05,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: '#stack', start: 'top 82%', ...enter },
-          },
-        );
-        gsap.fromTo(
-          '#stack-note',
-          { opacity: 0, y: 16 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: '#stack-note', start: 'top 92%', ...enter },
-          },
-        );
-
-        // ---------- ABOUT ----------
-        gsap
-          .timeline({
-            scrollTrigger: { trigger: '#about', start: 'top 78%', ...enter },
-          })
-          .fromTo(
-            '.about-eyebrow',
-            { opacity: 0, x: -12 },
-            { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' },
-            0,
-          )
-          .fromTo(
-            '#about-copy',
-            { opacity: 0, y: 18 },
-            { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
-            0.25,
-          );
-
-        // ---------- CTA ----------
-        gsap
-          .timeline({
-            scrollTrigger: { trigger: '#cta', start: 'top 80%', ...enter },
-          })
-          .fromTo('#cta-a', { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0)
-          .fromTo(
-            '#cta-b',
-            { opacity: 0, y: 36 },
-            { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
-            0.12,
-          )
-          .fromTo(
-            '#cta-link',
-            { opacity: 0, scale: 0.92 },
-            { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' },
-            0.32,
-          );
-
-        return () => {};
+        return () => io.disconnect();
       });
 
       const onResize = () => ScrollTrigger.refresh();
