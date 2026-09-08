@@ -93,6 +93,29 @@ export function useScrollAnimations({
     // fighting over the same DOM properties. gsap.matchMedia() instances
     // created inside a context are reverted along with it too.
     const ctx = gsap.context(() => {
+      // `ready` flips true the instant the preloader curtain finishes —
+      // exactly when an impatient visitor's first swipe lands. Building
+      // every ScrollTrigger below synchronously right then (each one reads
+      // layout to measure its trigger element) was blocking the main
+      // thread for hundreds of ms on a real phone, so that first native
+      // scroll gesture froze mid-swipe and then jumped once the block
+      // cleared. Native CSS scroll-snap doesn't need any of this JS to
+      // move, so deferring the setup a beat gives the browser room to
+      // paint and carry that gesture through on its own first — a single
+      // requestAnimationFrame tick isn't enough since the deferred work
+      // still lands within the same swipe (touchmove keeps firing for a
+      // couple hundred ms), so it'd still stomp on it, just one frame
+      // later. None of this is needed to react to the first scroll itself
+      // (the entrance animations it sets up don't fire until the user is
+      // already a section in), so a flat delay is safe.
+      const timer = setTimeout(() => {
+        ctx.add(setup);
+      }, 200);
+
+      return () => clearTimeout(timer);
+    });
+
+    function setup() {
       const q = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s);
       const qa = <T extends Element = HTMLElement>(s: string) =>
         Array.from(document.querySelectorAll<T>(s));
@@ -688,7 +711,7 @@ export function useScrollAnimations({
       return () => {
         window.removeEventListener('resize', onResize);
       };
-    });
+    }
 
     return () => {
       if (onMove) window.removeEventListener('mousemove', onMove);
