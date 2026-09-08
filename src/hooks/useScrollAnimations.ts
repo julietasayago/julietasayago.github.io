@@ -191,7 +191,6 @@ export function useScrollAnimations({
       // earlier wall-clock letter/rule/sub reveal raced the scroll-scrubbed
       // exit below and shattered the hero if you scrolled during it.)
       const letters = qa('#hero-name span');
-      gsap.set('.triad-item', { y: 24 });
 
       const mm = gsap.matchMedia();
 
@@ -200,6 +199,15 @@ export function useScrollAnimations({
 
         if (isDesktop) {
           // ================= DESKTOP: pinned, scroll-scrubbed storytelling =================
+          // Only needed here: the INTRO timeline below tweens .triad-item
+          // from this offset. Mobile reveals it with a CSS transition
+          // instead (see index.css) — gsap.set() writes an inline
+          // transform style that beats any stylesheet rule on specificity,
+          // so setting it unconditionally used to leave mobile's
+          // .triad-item permanently stuck at y:24 even after its CSS
+          // .is-visible rule said transform: none.
+          gsap.set('.triad-item', { y: 24 });
+
           const lenis = new Lenis({ duration: 1.05, smoothWheel: true, wheelMultiplier: 0.95 });
           lenisRef = lenis;
           lenis.on('scroll', () => ScrollTrigger.update());
