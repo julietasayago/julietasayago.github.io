@@ -24,6 +24,21 @@ function Preloader({ onDone }: { onDone: () => void }) {
     // lose.
     let cancelled = false;
 
+    // Warm up scrolling while the curtain still fully covers the screen:
+    // a browser's very first scroll on a freshly loaded page tends to be
+    // measurably slower/janky compared to every scroll after it (it's
+    // doing one-time setup — promoting the scroller to its own compositor
+    // layer, warming the touch/scroll input path — regardless of what the
+    // page's own JS does). Hero->Intro is always that first scroll, so it
+    // alone pays that cost; every later transition is already "warm".
+    // Nudging the scroll position by a throwaway pixel now, invisibly
+    // under the curtain, pays that one-time cost before the real gesture
+    // does instead of during it.
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 1);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
+
     const minDelay = new Promise((resolve) => setTimeout(resolve, 500));
     Promise.all([document.fonts.ready, minDelay]).then(() => {
       if (cancelled) return;
