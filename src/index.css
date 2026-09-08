@@ -839,15 +839,7 @@ figure {
    touch device, not a mouse-driven desktop. ---------- */
 @media (max-width: 860px), (pointer: coarse) {
   html {
-    /* proximity, not mandatory: mandatory forces a hard corrective jump
-       back to the nearest snap point after ANY scroll, even a tiny nudge
-       that never meant to leave the section — that correction is what
-       read as "violent". proximity only snaps once you're already close
-       to a point, so small movements just rest where they land, while a
-       real swipe still has enough momentum to land near the next section
-       and snap cleanly (scroll-snap-stop: always, below, still keeps a
-       fast flick from sailing past more than one). */
-    scroll-snap-type: y proximity;
+    scroll-snap-type: y mandatory;
   }
 
   #hero,
@@ -885,17 +877,20 @@ figure {
   #stack-stage,
   #about-stage,
   #cta {
-    /* 100svh is the *smallest* possible viewport (address bar fully
-       expanded); once you scroll and the browser chrome collapses, the
-       real visible area grows past it, leaving a gap before the next
-       section's snap point — a little extra scroll "to get there". Plain
-       100dvh would track that live, but it keeps recalculating *during* the
-       very scroll gesture that collapses the bar, which drags a mandatory
-       scroll-snap target out from under the first swipe (a visible cut).
-       --vh100 is the same idea frozen to a value JS only updates once the
-       resize has settled (see useStableViewportHeight), so it doesn't move
-       mid-gesture. */
-    min-height: var(--vh100, 100dvh);
+    /* 100svh, not 100dvh: svh is the *smallest* possible viewport (address
+       bar fully expanded) and never changes after that. dvh tracks the
+       real visible area live as the browser chrome shows/hides — which
+       sounds better, but chrome-collapse is triggered by the user's own
+       first scroll, so a plain dvh value recalculates *during* that very
+       gesture (dragging a mandatory scroll-snap target out from under the
+       swipe — a visible cut) and a version frozen by JS on a debounced
+       resize listener recalculates *just after* it instead (once the
+       resize settles, mandatory snap sees its target move and forces a
+       second, unrequested jump to catch up — worse: the swipe already
+       felt done). Both were tried and measured doing exactly this. svh
+       trades that away for a small, honest gap the next swipe closes
+       normally — never a surprise move with no finger on the glass. */
+    min-height: 100svh;
   }
   #hero-stage,
   #intro-stage,
@@ -940,9 +935,10 @@ figure {
        whole (multi-card-tall) stage and can bleed into the next card */
     position: relative;
     opacity: 1;
-    /* see --vh100 note above #hero-stage: frozen so it doesn't shift under
-       a mandatory scroll-snap gesture while the address bar collapses */
-    min-height: var(--vh100, 100dvh);
+    /* see the 100svh note above #hero-stage: stable, so it never shifts
+       under a mandatory scroll-snap gesture (mid- or just after) while the
+       address bar collapses */
+    min-height: 100svh;
     padding: clamp(36px, 8vh, 72px) clamp(20px, 6vw, 40px);
     scroll-snap-align: start;
     scroll-snap-stop: always;
